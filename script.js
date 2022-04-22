@@ -1,5 +1,4 @@
 const Vape = function (data) {
-    
     this.checkVolume = function () {
         return data.volumeTank;
     }
@@ -24,78 +23,69 @@ const Vape = function (data) {
     
     let smokingTime = 0;
     this.buttonOn = function () {
-        if(isPowered == true){
+        if(isPowered == false){
+            console.log("Error: Vape off");
+        }
+        if(liquid == null){
+            console.log("Error: add liquid");
+        }
+        if(coil == null){
+            console.log("Error: add coil");
+        }else if((isPowered !== false) && (liquid !== null) && (coil !== null)){
             window.timerId = window.setInterval(timer, 1000)
             function timer() {
                 smokingTime+= 1;
-                if(data.volumeTank > (data.volumeTank * 0.2)){
-                    (data.volumeTank+= -0.4).toFixed(1)
-                    console.log(data.volumeTank);
-                }else if(data.volumeTank < (data.volumeTank * 0.2) && data.volumeTank > 0){
-                    console.log("low liquid");
-                    (data.volumeTank+= -0.4).toFixed(1);
-                }else if(data.volumeTank < 0){
-                    console.log("coil burn");
+                if( liquid.get() > (data.volumeTank * 0.2)){
+                    liquid.liquidConsumption();
+                    console.log(liquid.get() + "ml");
+                }else if(liquid.get() > 0){
+                    liquid.liquidConsumption();
+                    console.log("low liquid!");
+                }else if(liquid.get() <= 0){
+                    console.log("coil burned");
                     window.clearInterval(window.timerId)
                 }
-                
             }
-        } else{
-            console.log("Error: Vape off");
         }
     }
     this.buttonOff = function () {
-        
         function stop() {
             window.clearInterval(window.timerId)
             console.log(`Smoking time: ${smokingTime}s, `);
         }
         stop();
     }
-    this.liquidCheck = function () {
-            console.log(liquid.get());
-    }
-
-    /* this.edit = function (newdata) {
-        data = {...data,...newdata}
-    } */
-
-    /* this.remove = function(name){
-        delete data[name]
-    } */
 
     this.get = function () {
         return [data, coil, liquid, isPowered];
     }
-
 }
 
 const Coil = function (data) {
     this.get = function () {
         return data.resistanse
     }
-
 }
 
 const Liquid = function (data) {
+    let volume = data.volume; 
     this.get = function () {
-        return data.volume
+        return volume
+    }
+    this.liquidConsumption = function () {
+        return volume-= 0.5
     }
 }
 
 
-let eleaf = new Vape(
-    {
+let eleaf = new Vape({
         volumeTank: 6.5,
         powerRange: {
             start: 30,
             end:75
         },
-        blowing: 0
+        blowing: 0})
 
-    }
-)
-/* console.log(eleaf.get()[0].volumeTank); */
 let coil = new Coil(
     {
         resistanse: 0.15
@@ -104,9 +94,11 @@ let coil = new Coil(
 
 let liquid = new Liquid(
     {
-        volume: 100
+        volume: 5
     }
 )
+
+
 
 
 //console.log(eleaf.get());
