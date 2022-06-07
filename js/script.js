@@ -30,6 +30,7 @@ const Charger = function(){
     };
 
     this.getBatteryLevel = function(){
+        //console.log(`Уровень заряда батареи ${batteryLevel} %`);
         return batteryLevel;
     }
 }
@@ -64,46 +65,61 @@ const Vape = function(data){
         if (this.getBatteryLevel() < 1){
             console.log("battery low");
             return;
-        }
-        if(!isPowered) console.log("Error: vape off");
-        if(liquid == null) console.log("Error: add liquid");
-        if(coil == null) console.log("Error: add coil");
+        };
+
+        if(!isPowered){
+            console.log("Error: vape off");
+            return;
+        };
+
+        if(liquid == null){
+            console.log("Error: add liquid");
+            return;
+        };
+
+        if(coil == null){
+            console.log("Error: add coil");
+            return;
+        };
 
         if(isPowered && liquid !== null && coil !== null){
-            window.timerId = window.setInterval(timer, 1500);
-            function timer(){
+            
+            window.timerId = window.setInterval(() =>{
                 smokingTime += 1;
-                if(liquid.get() > (data.volumeTank * 0.2)){
-                    liquid.volumeConsumption();
-                    eleaf1.batteryConsumption();
-                    console.log(liquid.get() + "ml");
-                }else if(liquid.get() > 0){
-                    liquid.volumeConsumption();
-                    eleaf1.batteryConsumption();
-                    console.log("low liquid!");
-                }else if(liquid1.get() <= 0){
-                    console.log("coil burned");
+
+                if(this.getBatteryLevel() > 0){
+                    if(liquid.get() > (data.volumeTank * 0.2)){
+                        liquid.volumeConsumption();
+                        this.batteryConsumption();
+                        console.log(liquid.get() + "ml");
+                    }else if(liquid.get() > 0){
+                        liquid.volumeConsumption();
+                        this.batteryConsumption();
+                        console.log("low liquid!");
+                    }else if(liquid1.get() <= 0){
+                        console.log("coil burned");
+                        window.clearInterval(window.timerId);
+                    };
+                }else{
+                    console.log("battery low");
                     window.clearInterval(window.timerId);
-                };
-            };
+                }
+            }, 1500);
+            
         };
     };
 
     this.buttonOff = function () {
         function stop() {
-            window.clearInterval(window.timerId)
+            window.clearInterval(window.timerId);
             console.log(`Smoking time: ${smokingTime}s `);
         }
         stop();
     }
 
-    this.edit = function(newData){
-        data = {...data,...newData}
-    }
-
-    this.remove = function(name){//название поля которое хотим удалить
-        delete data[name]
-    }
+    this.getStatus = function(){
+        console.log("status");
+    };
 
     this.get = function(){
         return [data, isPowered, coil, liquid];
@@ -129,6 +145,8 @@ const Liquid = function(dataLiquid){
     }
 }
 
+
+
 const eleaf1 = new Vape(
     {
         name: 'eleaf',
@@ -153,10 +171,13 @@ const liquid1 = new Liquid(
 )
 
 
-//console.log(eleaf1.get());
-//eleaf1.vapeOn();
-//eleaf1.addCoil(coil1);
-//eleaf1.addLiquid(liquid1);
-//console.log(eleaf1.get());
-
-//console.log(eleaf1);
+// eleaf1.enable(); зарядить устройство
+// eleaf1.disable(); снять устройсво с зарядки
+// eleaf1.getBatteryLevel(); проверить уровень заряда батареи
+// eleaf1.addCoil(Coil1); добавить испаритель
+// eleaf1.addLiquid(liquid1); добавить жидкость
+// eleaf1.vapeOn(); включает устройство
+// eleaf1.vapeOff(); выключает устройство 
+// eleaf1.buttonOn(); использовать устройство
+// eleaf1.buttonOff(); 
+// eleaf1.get(); информация об устройстве 
