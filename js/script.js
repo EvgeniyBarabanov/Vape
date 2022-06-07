@@ -10,7 +10,6 @@ const Charger = function(){
 
         function charger(){
             if(batteryLevel < 100) batteryLevel += 1;
-            //console.log(`Battery Level ${batteryLevel} %`);
         };
     };
 
@@ -83,7 +82,7 @@ const Vape = function(data){
         };
 
         if(isPowered && liquid !== null && coil !== null){
-            
+
             window.timerId = window.setInterval(() =>{
                 smokingTime += 1;
 
